@@ -1,0 +1,10 @@
+{% macro visit_log_row(log, index, show_user=False) %}
+<tr>
+    <td>{{ index }}</td>
+    <td>{{ log.created_at }}</td>
+    <td>{{ log.path }}</td>
+    {% if show_user %}
+    <td>{{ log.last_name }} {{ log.first_name }} {% if log.middle_name %}{{ log.middle_name }}{% endif %}</td>
+    {% endif %}
+</tr>
+{% endmacro %}
