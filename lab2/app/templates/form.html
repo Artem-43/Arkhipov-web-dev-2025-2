@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="mt-5 text-center">Форма</h1>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="">Тема</label>
+            <input type="text" name="theme">
+        </div>
+        <div class="mb-3">
+            <label for="">Текст</label>
+            <textarea name="text" id=""></textarea>
+        </div>
+        <div class="mb-3">
+            <button type="submit">Отправить</button>
+        </div>
+    </form>
+    {% if request.form %}
+        <h1 class="mt-5 text-center">Параметры формы:</h1>
+        <table class="table">
+            <tbody>
+            {% for key, value in request.form.items() %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
