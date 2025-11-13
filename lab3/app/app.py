@@ -71,10 +71,11 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
 def logout():
     logout_user()
-    flash('Вы успешно прошли деаутентификацию!', 'success')
+    flash('Выход совершен', 'success')
     return redirect(url_for('index'))
 
 @app.route('/secret')

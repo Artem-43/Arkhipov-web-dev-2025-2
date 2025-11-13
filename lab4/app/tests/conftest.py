@@ -7,12 +7,17 @@ from app import create_app
 from app.db import DBConnector
 from app.repositories.role_repository import RoleRepository
 from app.repositories.user_repository import UserRepository
+import os
+from dotenv import load_dotenv
+
+# Загружаем переменные из файла .env
+load_dotenv()
 
 TEST_DB_CONFIG = {
-    'MYSQL_USER': 'new_user',
-    'MYSQL_PASSWORD': 'user_password',
-    'MYSQL_HOST': 'localhost',
-    'MYSQL_DATABASE': 'db',
+    'MYSQL_USER': os.getenv('MYSQL_USER'),
+    'MYSQL_PASSWORD': os.getenv('MYSQL_PASSWORD'),
+    'MYSQL_HOST': os.getenv('MYSQL_HOST'),
+    'MYSQL_DATABASE': os.getenv('MYSQL_DATABASE'),
 }
 
 
@@ -27,18 +32,33 @@ def get_connection(app):
 def setup_db(app):
     logging.getLogger().info("Create db...")
     test_db_name = app.config['MYSQL_DATABASE']
-    create_db_query = (f'DROP DATABASE IF EXISTS {test_db_name}; '
-                       f'CREATE DATABASE {test_db_name}; '
-                       f'USE {test_db_name};')
-
-    with app.open_resource('schema.sql') as f:
-        schema_query = f.read().decode('utf8')
+    # Разделяем создание базы на отдельные запросы
+    create_db_queries = [
+        f'DROP DATABASE IF EXISTS {test_db_name}',
+        f'CREATE DATABASE {test_db_name}',
+        f'USE {test_db_name}',
+    ]
 
     connection = get_connection(app)
-    query = '\n'.join([create_db_query, schema_query])
-    with connection.cursor(named_tuple=True) as cursor:
-        for _ in cursor.execute(query, multi=True):
-            pass
+    with connection.cursor() as cursor:
+        for q in create_db_queries:
+            cursor.execute(q)
+    connection.commit()
+
+    # Подключаемся к созданной базе
+    connection.database = test_db_name
+
+    # Загружаем схему из файла
+    with app.open_resource('schema.sql') as f:
+        schema_sql = f.read().decode('utf8')
+
+    # Разделяем SQL из schema.sql на отдельные запросы
+    for q in schema_sql.split(';'):
+        q = q.strip()
+        if q:  # пропускаем пустые строки
+            with connection.cursor() as cursor:
+                cursor.execute(q)
+
     connection.commit()
     connection.close()
 
