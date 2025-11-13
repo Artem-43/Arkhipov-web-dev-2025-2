@@ -1,0 +1,31 @@
+body {
+    font-size: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+}
+
+.avatar {
+    max-width: 100%;
+}
+
+#foot {
+    background-color: black;
+    text-decoration: none;
+    padding: 20px 20px;
+    color: white;
+}
+
+.comment-avatar {
+    width: 50px;
+    height: 50px;
+}
+
+.reply-avatar {
+    width: 40px;
+    height: 40px;
+}
